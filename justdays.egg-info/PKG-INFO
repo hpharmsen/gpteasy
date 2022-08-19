@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: justdays
-Version: 1.0.0
+Version: 1.5.1
 Summary: Makes working with days super easy
 Author-email: HP Harmsen <hp@harmsen.nl>
 License: This is free and unencumbered software released into the public domain.
@@ -41,7 +41,7 @@ License-File: LICENSE
 # Justdays
 
 Package to make working with days in Python super easy.
-
+Current version: 1.5.1
 
 ## Installation
 ~~~~bash

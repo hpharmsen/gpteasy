@@ -2,5 +2,6 @@ python-dateutil
 
 [dev]
 black
-bumpver
 pytest
+build
+twine
