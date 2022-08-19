@@ -1,3 +1,4 @@
+rm dist/*
 python bumpversion.py patch
 python -m build
 twine upload dist/*
