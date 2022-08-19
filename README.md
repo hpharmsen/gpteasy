@@ -1,7 +1,7 @@
 # Justdays
 
 Package to make working with days in Python super easy.
-
+Current verison: 1.1.0
 
 ## Installation
 ~~~~bash
