@@ -21,7 +21,7 @@ dependencies = [
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
-dev = ["black", "bumpver", "pytest"]
+dev = ["black", "bumpver", "pytest", "build", "twine"]
 
 [project.urls]
 Homepage = "https://github.com/hpharmsen/justdays"
