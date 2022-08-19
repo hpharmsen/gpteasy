@@ -1,7 +1,12 @@
 # Justdays
 
-Package to make working with days in Python super easy.
-Current version: 1.5.1
+Package to make working with days and ranges of days in Python super easy.
+
+The package contains two classes: \
+**Day** handles everything you want to do with days. \
+**Period** handles a range of Day objects.
+
+Current version: 1.5.2
 
 ## Installation
 ~~~~bash

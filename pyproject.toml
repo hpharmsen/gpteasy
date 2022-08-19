@@ -4,13 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "justdays"
-version = "1.5.1"
+version = "1.5.2"
 description = "Makes working with days super easy"
 readme = "README.md"
 authors = [{ name = "HP Harmsen", email = "hp@harmsen.nl" }]
 license = { file = "LICENSE" }
 classifiers = [
-    "License :: OSI Approved :: Unlicence",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]
