@@ -1,0 +1,45 @@
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "justdays"
+version = "1.0.0"
+description = "Makes working with days super easy"
+readme = "README.md"
+authors = [{ name = "HP Harmsen", email = "hp@harmsen.nl" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: Unlicence",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["feed", "reader", "tutorial"]
+dependencies = [
+    "python-dateutil",
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = ["black", "bumpver", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/hpharmsen/justdays"
+
+[tool.bumpver]
+current_version = "1.0.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+]
+"README.md" = [
+    "{version}",
+    "{pep440_version}",
+]
+

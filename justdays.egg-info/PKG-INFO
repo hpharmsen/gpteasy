@@ -1,0 +1,118 @@
+Metadata-Version: 2.1
+Name: justdays
+Version: 1.0.0
+Summary: Makes working with days super easy
+Author-email: HP Harmsen <hp@harmsen.nl>
+License: This is free and unencumbered software released into the public domain.
+        
+        Anyone is free to copy, modify, publish, use, compile, sell, or
+        distribute this software, either in source code form or as a compiled
+        binary, for any purpose, commercial or non-commercial, and by any
+        means.
+        
+        In jurisdictions that recognize copyright laws, the author or authors
+        of this software dedicate any and all copyright interest in the
+        software to the public domain. We make this dedication for the benefit
+        of the public at large and to the detriment of our heirs and
+        successors. We intend this dedication to be an overt act of
+        relinquishment in perpetuity of all present and future rights to this
+        software under copyright law.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+        EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+        MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+        IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+        OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+        ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+        OTHER DEALINGS IN THE SOFTWARE.
+        
+        For more information, please refer to <https://unlicense.org>
+        
+Project-URL: Homepage, https://github.com/hpharmsen/justdays
+Keywords: feed,reader,tutorial
+Classifier: License :: OSI Approved :: Unlicence
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Provides-Extra: dev
+License-File: LICENSE
+
+# Justdays
+
+Package to make working with days in Python super easy.
+
+
+## Installation
+~~~~bash
+python -m pip install justdays
+~~~~
+
+## Day class usage
+
+### Initializing a Day
+~~~~python
+day = Day() # No arguments, initalize with the current day
+day = Day('2022-08-16') # String argument in YYYY-MM-DD format
+day = Day(2022, 32) # Two arguments: year, week. Day with be the Monday of that week
+day = Day(datetime(2022, 8, 16)) # Initialize with Python datetime object
+day = Day(date(2022, 8, 16)) # Initialize with Python date object
+~~~~
+
+### Represenation
+~~~~python
+str(day) # Returns the day in YYYY-MM-DD format
+day.as_datetime() # Returns the day as a Python datetime object
+day.as_date() # Returns the day as a Python date object
+day.strftime(format_string) # Returns the day as a string formatted according to the format string
+~~~~
+
+### Days further away or in the past
+~~~~python
+day.next() # Next day
+day.previous() # Previous day
+day.next_weekday() # Next day that is on a weekday
+day.plus_days(3) # Add 3 days to the day
+day.plus_days(-3) # Subtract 3 days from the day
+day.plus_weeks(1) # Add 1 week to the day
+day.plus_months(1) # Add 1 month to the day
+~~~~
+
+
+### Comparing days
+~~~~python
+day1 = Day('2022-08-16')
+day2 = Day('2022-08-20')
+day2 > day1 # Returns True if day2 is after day1
+day2 == day1 # Returns True if day2 is the same day as day1
+days_difference = day2 - day 1 # Returns the difference in days between two days (4)
+~~~~
+
+### Miscellaneous
+~~~~python
+day.is_weekend() # Returns True if the day is a weekend
+day.is_weekday() # Returns True if the day is a weekday
+day.day_of_week() # Returns the day of the week as an integer (0 = Monday, 6 = Sunday)
+day.day_of_year() # Returns the day of the year as an integer (1 = 1st of January, 365 = 31st of December in a non leap year)
+day.fraction_of_the_year_past() # Returns the fraction of the year that has passed (0.0 = 1st of January, 1.0 = 31st of December)
+day.week_number() # Returns the week number of the year (1 = first week of the year, 52 = last week of the year)
+day.last_monday() # Returns the last day that was a Monday or the day itself if it is a Monday
+day.last_day_of_month() # Returns the last day of the month of the day
+~~~~
+
+
+## Period class usage
+Period is just a day range. Either fromday or untilday can be left to None
+
+### Initializing a Period
+~~~~python
+period = Period(day1, day2) # Period ranging from day1 (included) until day2 (not included)
+period = Period(day1) # One argument: fromday. Untilday is left open
+period = Period('2022-08-16', '2022-08-20') # Period cam be initialized with strings in YYYY-MM-DD format
+~~~~
+
+### Iterating over a Period
+~~~~python
+for day in Period(day1, day2):
+    print(day)
+~~~~

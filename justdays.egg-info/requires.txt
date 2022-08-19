@@ -1,0 +1,6 @@
+python-dateutil
+
+[dev]
+black
+bumpver
+pytest
