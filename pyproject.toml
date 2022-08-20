@@ -13,7 +13,7 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]
-keywords = ["feed", "reader", "tutorial"]
+keywords = ["days", "adding days", "difference between days", "range of days", "last Monday"]
 dependencies = [
     "python-dateutil",
 ]
