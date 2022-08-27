@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import sys
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
 import calendar
@@ -115,7 +117,9 @@ class Day:
 
     def week_number(self) -> int:
         """Return the week number of the year."""
-        return self.as_datetime().isocalendar().week
+        if sys.version_info[1] >= 9:
+            return self.as_datetime().isocalendar().week
+        return self.as_datetime().isocalendar()[1]
 
     def day_of_the_year(self) -> int:
         """Day of the year is a number between 1 and 365/366, January 1st is day 1"""
