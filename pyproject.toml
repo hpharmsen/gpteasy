@@ -25,3 +25,5 @@ dev = ["black", "pytest", "build", "twine"]
 [project.urls]
 Homepage = "https://github.com/hpharmsen/justdays"
 
+[tool.setuptools]
+py-modules = ["justdays"]
