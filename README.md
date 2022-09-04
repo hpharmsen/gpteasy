@@ -45,9 +45,13 @@ day.as_unix_timestamp() # Returns the day as a unix timestamp (int)
 ### Days further away or in the past
 ~~~~python
 day.next()  # Next day
+day + 1  # Next day
+1 + day  # Next day
 day.previous()  # Previous day
+day - 1  # Previous day
 day.next_weekday()  # Next day that is on a weekday
 day.plus_days(3)  # Add 3 days to the day
+day + 3
 day.plus_days(-3)  # Subtract 3 days from the day
 day.plus_weeks(1)  # Add 1 week to the day
 day.plus_months(1)  # Add 1 month to the day
@@ -60,7 +64,7 @@ day1 = Day('2022-08-16')
 day2 = Day('2022-08-20')
 day2 > day1  # Returns True if day2 is after day1
 day2 == day1  # Returns True if day2 is the same day as day1
-days_difference = day2 - day 1  # Returns the difference in days between two days (4)
+days_difference = day2 - day1  # Returns the difference in days between two days (4)
 ~~~~
 
 ### Miscellaneous
@@ -73,6 +77,8 @@ day.fraction_of_the_year_past()  # Returns the fraction of the year that has pas
 day.week_number()  # Returns the week number of the year (1 = first week of the year, 52 = last week of the year)
 day.last_monday()  # Returns the last day that was a Monday or the day itself if it is a Monday
 day.last_day_of_month()  # Returns the last day of the month of the day
+day + ' is a nice day'  # Add string to a day
+'The date is ' + day  # Add string to a day
 ~~~~
 
 

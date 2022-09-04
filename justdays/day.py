@@ -56,9 +56,31 @@ class Day:
     def __eq__(self, other) -> bool:
         return str(self) == str(other)
 
-    def __sub__(self, other) -> int:
-        """Days can be substracted from each other"""
-        return (self.as_datetime() - other.as_datetime()).days
+    def __add__(self, other):
+        if type(other) == int:
+            return self.plus_days(other)
+        elif type(other) == str:
+            return str(self) + other
+        else:
+            raise TypeError(f"Cannot add Day to {type(other)}")
+
+    def __radd__(self, other):
+        if type(other) == int:
+            return self.plus_days(other)
+        elif type(other) == str:
+            return other + str(self)
+        else:
+            raise TypeError(f"Cannot add Day to {type(other)}")
+
+    def __sub__(self, other) -> int|Day:
+        """ Days can be substracted from each other
+            Or you can subtstract a number to go back as many days """
+        if type(other) == Day:
+            return (self.as_datetime() - other.as_datetime()).days
+        elif type(other) == int:
+            return self.plus_days(-other)
+        else:
+            raise TypeError(f"Cannot substract {type(other)} from Day")
 
     def as_datetime(self) -> datetime:
         return datetime(self.y, self.m, self.d)
