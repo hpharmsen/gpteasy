@@ -25,5 +25,8 @@ dev = ["black", "pytest", "build", "twine"]
 [project.urls]
 Homepage = "https://github.com/hpharmsen/justdays"
 
-[tool.setuptools]
-py-modules = ["justdays"]
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages (["."] by default)
+include = ["justdays"]  # package names should match these glob patterns (["*"] by default)
+exclude = ["test_justdays"]  # exclude packages matching these glob patterns (empty by default)
+namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
