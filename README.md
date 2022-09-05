@@ -6,7 +6,7 @@ The package contains two classes: \
 **Day** handles everything you want to do with days. \
 **Period** handles a range of Day objects.
 
-Current version: 1.6.2
+Current version: 1.6.3
 
 ## Installation
 ~~~~bash
