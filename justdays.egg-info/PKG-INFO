@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: justdays
-Version: 1.6.3
+Version: 1.7.1
 Summary: Makes working with days super easy
 Author-email: HP Harmsen <hp@harmsen.nl>
 License: This is free and unencumbered software released into the public domain.
@@ -45,7 +45,7 @@ The package contains two classes: \
 **Day** handles everything you want to do with days. \
 **Period** handles a range of Day objects.
 
-Current version: 1.6.3
+Current version: 1.7.1
 
 ## Installation
 ~~~~bash
@@ -64,12 +64,12 @@ day = Day(datetime(2022, 8, 16))  # Initialize with Python datetime object
 day = Day(date(2022, 8, 16))  # Initialize with Python date object
 ~~~~
 
-### Accessing Day fiels
+### Accessing Day fields
 ~~~~python
 d = day.d  # int
 m = day.m  # int
 y = day.y  # int
-as_sting = day.str  # in YYYY-MM-DD format
+as_string = day.str  # in YYYY-MM-DD format
 ~~~~
 
 ### Represenation
