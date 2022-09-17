@@ -25,12 +25,12 @@ day = Day(datetime(2022, 8, 16))  # Initialize with Python datetime object
 day = Day(date(2022, 8, 16))  # Initialize with Python date object
 ~~~~
 
-### Accessing Day fiels
+### Accessing Day fields
 ~~~~python
 d = day.d  # int
 m = day.m  # int
 y = day.y  # int
-as_sting = day.str  # in YYYY-MM-DD format
+as_string = day.str  # in YYYY-MM-DD format
 ~~~~
 
 ### Represenation

@@ -72,7 +72,7 @@ class Day:
         else:
             raise TypeError(f"Cannot add Day to {type(other)}")
 
-    def __sub__(self, other) -> int|Day:
+    def __sub__(self, other) -> int | Day:
         """ Days can be substracted from each other
             Or you can subtstract a number to go back as many days """
         if type(other) == Day:
@@ -88,7 +88,7 @@ class Day:
     def as_date(self) -> date:
         return date(self.y, self.m, self.d)
 
-    def as_unix_timetamp(self) -> int:
+    def as_unix_timestamp(self) -> int:
         """Returns the unix timestamp of the day"""
         return int(self.as_datetime().timestamp())
 
@@ -143,14 +143,14 @@ class Day:
             return self.as_datetime().isocalendar().week
         return self.as_datetime().isocalendar()[1]
 
-    def day_of_the_year(self) -> int:
+    def day_of_year(self) -> int:
         """Day of the year is a number between 1 and 365/366, January 1st is day 1"""
         return self.as_datetime().timetuple().tm_yday
 
     def fraction_of_the_year_past(self) -> float:
         """Returns a fraction of how much of the year is past including the current day"""
         is_leap_year = self.y % 4 == 0 and (self.y % 100 != 0 or self.y % 400 == 0)
-        return self.day_of_the_year() / (366 if is_leap_year else 365)
+        return self.day_of_year() / (366 if is_leap_year else 365)
 
     def last_monday(self) -> Day:
         """Returns the last day that was a Monday or the day itself if it is a Monday"""

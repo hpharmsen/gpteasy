@@ -35,8 +35,19 @@ class Period:
             raise StopIteration
         return self.current
 
-    def __contains__(self, day: Day) -> bool:
-        return day >= self.fromday and day < self.untilday
+    def __contains__(self, other: Day | Period) -> bool:
+        if type(other) == Day:
+            return self.fromday <= other < self.untilday
+        elif type(other) == Period:
+            if not self.untilday:
+                return self.fromday <= other.fromday
+            if not other.untilday:
+                return False
+            return self.fromday <= other.fromday < self.untilday and self.fromday <= other.untilday < self.untilday
+        raise TypeError(f"Invalid type passed to Period.__contains__: {type(other)}")
 
     def __len__(self) -> int:
         return self.untilday - self.fromday
+
+    def __eq__(self, other) -> bool:
+        return self.fromday == other.fromday and self.untilday == other.untilday

@@ -31,9 +31,8 @@ def bump(file, tag, what='minor', new_version=None):
     return new_version
 
 
-
 if __name__ == "__main__":
     what = sys.argv[1]
-    version = bump( 'pyproject.toml', "version = ", what=what )
-    bump( "README.md", "Current version: ", new_version=version)
-    print( 'Updated version to', version )
+    version = bump('pyproject.toml', "version = ", what=what)
+    bump("README.md", "Current version: ", new_version=version)
+    print('Updated version to', version)
