@@ -32,6 +32,7 @@ class Period:
     def __next__(self) -> Day:
         self.current = self.current.next()
         if self.current == self.untilday:
+            self.current = self.fromday.prev()
             raise StopIteration
         return self.current
 
