@@ -12,7 +12,6 @@ def the_day() -> Day:
 def next_monday() -> Day:
     return Day('2023-01-02')
 
-
 # Initializing a Day
 def test_init():
     assert Day().as_date() == datetime.date.today()

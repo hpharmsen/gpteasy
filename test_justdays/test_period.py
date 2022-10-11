@@ -80,3 +80,19 @@ def test_contains_period_open(open_period: Period, the_day: Day):
 
 def test_open_period_contains_open_period(open_period: Period, next_monday: Day):
     assert Period(next_monday) in open_period
+
+
+def test_period_from_week():
+    period = Period.from_week(2022, 36)
+    assert Day(2022, 9, 4) not in period
+    assert Day(2022, 9, 5) in period
+    assert Day(2022, 9, 11) in period
+    assert Day(2022, 9, 12) not in period
+
+
+def test_period_from_month():
+    period = Period.from_month(2022, 8)
+    assert Day(2022, 7, 31) not in period
+    assert Day(2022, 8, 1) in period
+    assert Day(2022, 8, 31) in period
+    assert Day(2022, 9, 1) not in period

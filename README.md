@@ -90,6 +90,8 @@ Period is just a day range. Either fromday or untilday can be left to None
 period = Period(day1, day2)  # Period ranging from day1 (included) until day2 (not included)
 period = Period(day1)  # One argument: fromday. Untilday is left open
 period = Period('2022-08-16', '2022-08-20')  # Period can be initialized with strings in YYYY-MM-DD format
+period = Period.from_week(2022, 32)  # Period ranging from the Monday of week 32 until the Sunday of week 32
+period = Period.from_month(2022, 8)  # Period ranging from the 1st of August until the 31st of August
 ~~~~
 
 ### Accessing Period fields
@@ -98,8 +100,6 @@ fromday = period.fromday
 untilday = period.untilday
 length = len(period)
 ~~~~
-
-
 
 ### Iterating over a Period
 ~~~~python

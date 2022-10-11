@@ -17,6 +17,20 @@ class Period:
         self.untilday = untilday
         self.current = fromday.prev()  # Initialize iterator
 
+    @classmethod
+    def from_week(cls, year, weekno):
+        """Returns a Period object for the week of the year"""
+        fromday = Day(year, weekno)
+        untilday = fromday.plus_weeks(1)
+        return cls(fromday, untilday)
+
+    @classmethod
+    def from_month(cls, year, month):
+        """Returns a Period object for the month of the year"""
+        fromday = Day(year, month, 1)
+        untilday = fromday.plus_months(1)
+        return cls(fromday, untilday)
+
     def __str__(self) -> str:
         return f'{self.fromday} --> {self.untilday if self.untilday else ""}'
 
@@ -31,7 +45,7 @@ class Period:
 
     def __next__(self) -> Day:
         self.current = self.current.next()
-        if self.current == self.untilday:
+        if self.current >= self.untilday:
             self.current = self.fromday.prev()
             raise StopIteration
         return self.current
