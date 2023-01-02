@@ -6,7 +6,7 @@ The package contains two classes: \
 **Day** handles everything you want to do with days. \
 **Period** handles a range of Day objects.
 
-Current version: 1.8.1
+Current version: 1.8.2
 
 ## Installation
 ~~~~bash
@@ -50,6 +50,7 @@ day + 1  # Next day
 day.previous()  # Previous day
 day - 1  # Previous day
 day.next_weekday()  # Next day that is on a weekday
+day.previous_weekday()  # Previous day that is on a weekday
 day.plus_days(3)  # Add 3 days to the day
 day + 3
 day.plus_days(-3)  # Subtract 3 days from the day

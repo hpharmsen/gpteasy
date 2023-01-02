@@ -107,6 +107,13 @@ class Day:
             day = day.plus_days(1)
         return day
 
+    def previous_weekday(self) -> Day:
+        """Returns the first day in the future that is on a weekday"""
+        day = self.plus_days(-1)
+        while day.day_of_week() >= 5:
+            day = day.plus_days(-1)
+        return day
+
     def prev(self) -> Day:
         """Return the previous day"""
         return self.plus_days(-1)

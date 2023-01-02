@@ -115,9 +115,20 @@ def test_next_weekday_on_a_monday(next_monday: Day):
     assert next_monday.next_weekday() == Day('2023-01-03')
 
 
+def test_previous_weekday_on_a_sunday(next_monday: Day):
+    assert Day('2023-01-01').previous_weekday() == Day('2022-12-30')
+
+
+def test_previous_weekday(the_day: Day):
+    assert the_day.previous_weekday() == Day('2022-12-29')
+
+
+def test_previous_weekday_on_a_monday(next_monday: Day):
+    assert Day('2023-01-02').previous_weekday() == Day('2022-12-30')
+
+
 def test_next_weekday_on_a_sunday(next_monday: Day):
     assert Day('2023-01-01').next_weekday() == next_monday
-
 
 def test_plus_weeks(the_day: Day):
     assert the_day.plus_weeks(2) == Day('2023-01-13')
