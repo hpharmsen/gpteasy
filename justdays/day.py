@@ -22,8 +22,7 @@ class Day:
             dt = datetime.today()
         elif isinstance(args[0], str):
             """One argument: string in format YYYY-MM-DD"""
-            y, m, d = args[0].split("-")
-            dt = datetime(int(y), int(m), int(d))
+            dt = datetime(*map(int, args[0].split("-")))
         elif isinstance(args[0], (date, datetime)):
             """One argument: datetime or date"""
             dt = args[0]
