@@ -1,14 +1,10 @@
 python-dateutil
-pytest
 openai
 python-dotenv
 rich
 tenacity
-pip
-attrs
+requests
 setuptools
 packaging
-pluggy
-iniconfig
-six
-requests
+pip
+pytest
