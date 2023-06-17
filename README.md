@@ -17,6 +17,27 @@ python -m pip install gpteasy
 OPENAI_API_KEY=your-openai-api-key
 OPENAI_ORGANIZATION=your-openai-organization-id
 ```
+## Usage
+```Python
+from gpteasy import GPT
+
+
+if __name__ == "__main__":
+    gpt = GPT()
+    gpt.model = 'gpt-3.5-turbo' # Optional, the default model is gpt-4
+    gpt.system = lambda: "You are a movie critic. I feed you with movie titles and you give me a review in 50 words."
+
+    message = gpt.chat("Forrest Gump")
+    print(message.text)
+```
+output
+```
+Forrest Gump is an American classic that tells the story of
+a man with a kind heart and simple mind who experiences major
+events in history. Tom Hanks gives an unforgettable performance, 
+making us both laugh and cry. A heartwarming and nostalgic 
+movie that still resonates with audiences today.
+```
 
 ## Using the examples
 Install dependencies:

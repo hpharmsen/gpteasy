@@ -5,3 +5,6 @@ dist/
 __pycache__/
 build/
 venv/
+gpteasy.egg-info
+gpteasy.egg-info/
+gpteasy/saves
