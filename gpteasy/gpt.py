@@ -9,8 +9,7 @@ from tenacity import retry, wait_random_exponential, stop_after_attempt
 from dotenv import load_dotenv
 from openai.error import APIConnectionError, APIError, RateLimitError
 
-from gpteasy.display import print_message, color_print, SYSTEM_COLOR, ERROR_COLOR
-from gpteasy.settings import get_settings
+from gpteasy.display import print_message, color_print, SYSTEM_COLOR, ERROR_COLOR, DEBUG_COLOR2, DEBUG_COLOR1
 
 BASE_SYSTEM = "You are ChatGPT, a large language model trained by OpenAI."
 
@@ -134,6 +133,8 @@ class GPT:
         self.message_memory = 20  # Number of messages to remember. Limits token usage.
         self.messages = []
 
+        self.debug = False
+
     def system(self):  # This function can be overwritten by child classes to make the system message dynamic
         return self.system_message
 
@@ -165,6 +166,10 @@ class GPT:
 
         @retry(wait=wait_random_exponential(min=1, max=40), stop=stop_after_attempt(3))
         def chat_completion_request():
+            if self.debug:
+                for message in self.messages:
+                    if hasattr(message, 'text'):
+                        color_print(f"{message.role}: {message.text}", color=DEBUG_COLOR1)
             try:
                 if self.functions:
                     completion = openai.ChatCompletion.create(
@@ -192,6 +197,8 @@ class GPT:
                         presence_penalty=self.presence_penalty,
                         stop=self.stop
                     )
+                if self.debug and hasattr(completion.choices[0], 'text'):
+                    color_print(f"{completion.choices[0].text}", color=DEBUG_COLOR2)
                 return completion
             except APIConnectionError as e:
                 color_print("Connection error.", color=SYSTEM_COLOR)
@@ -200,7 +207,7 @@ class GPT:
                 color_print("API error", color=SYSTEM_COLOR)
                 return e
             except RateLimitError as e:
-                color_print(f"{get_settings()['model']} is overloaded", color=SYSTEM_COLOR)
+                color_print(f"{self.model} is overloaded", color=SYSTEM_COLOR)
                 return e
 
         if self.messages and not self.name:
