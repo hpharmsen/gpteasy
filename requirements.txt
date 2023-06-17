@@ -1,2 +1,14 @@
 python-dateutil
 pytest
+openai
+python-dotenv
+rich
+tenacity
+pip
+attrs
+setuptools
+packaging
+pluggy
+iniconfig
+six
+requests

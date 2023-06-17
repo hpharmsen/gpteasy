@@ -1,7 +1,0 @@
-python-dateutil
-
-[dev]
-black
-pytest
-build
-twine

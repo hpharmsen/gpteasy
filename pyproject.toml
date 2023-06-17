@@ -3,9 +3,9 @@ requires      = ["setuptools>=61.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "justdays"
-version = "1.8.5"
-description = "Makes working with days super easy"
+name = "gpteasy"
+version = "0.0.3"
+description = "Makes working with OpenAi's GPT API super easy"
 readme = "README.md"
 authors = [{ name = "HP Harmsen", email = "hp@harmsen.nl" }]
 license = { file = "LICENSE" }
@@ -13,20 +13,20 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
 ]
-keywords = ["days", "adding days", "difference between days", "range of days", "last Monday"]
+keywords = ["ChatGPT", "GPT4", "GPT3.5", "api"]
 dependencies = [
     "python-dateutil",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 
 [project.optional-dependencies]
 dev = ["black", "pytest", "build", "twine", "nox"]
 
 [project.urls]
-Homepage = "https://github.com/hpharmsen/justdays"
+Homepage = "https://github.com/hpharmsen/gpteasy"
 
 [tool.setuptools.packages.find]
 where = ["."]  # list of folders that contain the packages (["."] by default)
-include = ["justdays"]  # package names should match these glob patterns (["*"] by default)
-exclude = ["test_justdays"]  # exclude packages matching these glob patterns (empty by default)
+include = ["gpteasy"]  # package names should match these glob patterns (["*"] by default)
+exclude = ["test_gpteasy"]  # exclude packages matching these glob patterns (empty by default)
 namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
