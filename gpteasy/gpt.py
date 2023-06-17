@@ -14,14 +14,15 @@ from .settings import get_settings
 
 BASE_SYSTEM = "You are ChatGPT, a large language model trained by OpenAI."
 
+
 class GptFunction:
-    def __init__(self, name:str, description:str, callback=None):
+    def __init__(self, name: str, description: str, callback=None):
         self.name = name
         self.description = description
         self.parameters = {}  # name: (type, description, required, enum)
         self.callback = callback
 
-    def add_param(self, name:str, type:str, description:str=None, required:bool=False, enum:list=None):
+    def add_param(self, name: str, type: str, description: str = None, required: bool = False, enum: list = None):
         self.parameters[name] = (type, description, required, enum)
 
     def __call__(self, **kwargs):
@@ -74,12 +75,11 @@ class GPT:
             load_dotenv()  # Load the .env file into the environment
         openai.api_key = os.getenv("OPENAI_API_KEY")
         if not openai.api_key:
-            print_message("No OpenAI API key found. Create one at https://platform.openai.com/account/api-keys and " +\
-                          "set it in the .env file like OPENAI_API_KEY=here_comes_your_key.", color=ERROR_COLOR)
-        #openai.organization = os.getenv("OPENAI_ORGANIZATION")
-        self.functions = {} # Callable GPT functions
+            color_print("No OpenAI API key found. Create one at https://platform.openai.com/account/api-keys and " +
+                        "set it in the .env file like OPENAI_API_KEY=here_comes_your_key.", color=ERROR_COLOR)
+        self.functions = {}  # Callable GPT functions
 
-        self.system = lambda: BASE_SYSTEM
+        self.system_message = BASE_SYSTEM
 
         # Model parameters
         self.model = "gpt-4"  # "gpt-3.5-turbo"
@@ -134,6 +134,9 @@ class GPT:
         self.message_memory = 20  # Number of messages to remember. Limits token usage.
         self.messages = []
 
+    def system(self):  # This function can be overwritten by child classes to make the system message dynamic
+        return self.system_message
+
     def reset(self):
         self.name = ''
         self.messages = []
@@ -149,10 +152,10 @@ class GPT:
             result.append(message)
         return result
 
-    def add_function(self, function:GptFunction):
+    def add_function(self, function: GptFunction):
         self.functions[function.name] = function
 
-    def remove_funtion(self, name:str):
+    def remove_funtion(self, name: str):
         del self.functions[name]
 
     def get_functions(self):
@@ -177,7 +180,7 @@ class GPT:
                         functions=self.get_functions(),
                         function_call="auto" if self.functions else None  # auto is default, but we'll be explicit
                     )
-                else: # Version for models without the possibility to use functions
+                else:  # Version for models without the possibility to use functions
                     completion = openai.ChatCompletion.create(
                         model=self.model,
                         messages=self.get_messages(),
@@ -200,7 +203,6 @@ class GPT:
                 color_print(f"{get_settings()['model']} is overloaded", color=SYSTEM_COLOR)
                 return e
 
-
         if self.messages and not self.name:
             self.name = re.sub(r'\W+', '', self.messages[0].text).replace(' ', '_')[:20]
         self.messages += [Message('user', prompt)]
@@ -214,7 +216,6 @@ class GPT:
             kwargs = json.loads(function_call["arguments"])
             function_response = function_to_call(**kwargs)
 
-            #self.messages += [Message('assistant', completion)]
             self.messages += [Message('function', name=function_call["name"], content=function_response)]
 
             # get a new response from GPT where it can see the function response
@@ -240,8 +241,8 @@ class GPT:
 
     def load(self, name):
         def save_message(msg):
-            if msg['role'] == 'system':
-                self.system = lambda: msg['content']
+            if msg.role == 'system':
+                self.system_message = msg.text
             else:
                 self.messages += [msg]
 
@@ -255,17 +256,18 @@ class GPT:
             return
         with open(filename, "r") as f:
             message = Message()
+            assert not message
             for line in f.readlines():
                 line = line[:-1]
                 try:
-                    role, content = line.split(': ', 1)
+                    role, text = line.split(': ', 1)
                 except ValueError:
                     message.text += '\n' + line
                     continue
-                if role in ['system', 'user', 'assistant']:
+                if role in ['system', 'user', 'assistant', 'function']:
                     if message:
                         save_message(message)
-                    message = {'role': role, 'content': content}
+                    message = Message(role=role, text_or_completion=text)
                 else:
                     message.text += '\n' + line
             if message:
@@ -301,3 +303,6 @@ class Message:
 
     def tokens(self):
         return self.raw_completion['usage']['total_tokens']
+
+    def __bool__(self):
+        return bool(self.raw_completion) or bool(self.text)

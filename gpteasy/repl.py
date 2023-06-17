@@ -4,7 +4,7 @@ from .gpt import GPT
 
 
 class Repl:
-    def __init__(self, gpt: GPT, command_handler:callable):
+    def __init__(self, gpt: GPT, command_handler: callable):
         self.gpt = gpt
         self.command_handler = command_handler
         self.show_token_count = False

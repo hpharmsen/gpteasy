@@ -15,7 +15,7 @@ class CommandHandler:
         self.add_command('input', self.handle_input, ":input filename - loads an input from the specified file")
         self.add_command('model', self.handle_gpt_attribute, ":model gpt-4 - Sets the AI model")
         self.add_command('max_tokens', self.handle_gpt_attribute,
-                        ":max_tokens 800 - The maximum number of tokens to generate in the completion")
+                         ":max_tokens 800 - The maximum number of tokens to generate in the completion")
         self.add_command('temperature', self.handle_gpt_attribute, ":temperature 0.9 - What sampling temperature to " +
                                                                    "use, between 0 and 2")
         self.add_command('n', self.handle_gpt_attribute, ":n 1 - Specifies the number answers given")
@@ -24,7 +24,7 @@ class CommandHandler:
         self.add_command('bye', self.handle_bye, ":bye - quits but saves the conversation first")
         self.add_command('help', self.handle_help, ":help - shows this help message")
         for attr in dir(self.gpt):
-            if attr[0] != '_' and not attr in self.commands:
+            if attr[0] != '_' and attr not in self.commands:
                 self.add_command(attr, self.handle_gpt_attribute, "")
 
     def add_command(self, command, handler, description):
@@ -68,6 +68,10 @@ class CommandHandler:
         self.gpt.message_memory = int(param)
 
     def handle_gpt_attribute(self, attr, value):
+        if not value:
+            value = getattr(self.gpt, attr)
+            color_print(f"{attr} is currently {value}\n", color=SYSTEM_COLOR)
+            return True
         try:
             value = eval(value)
         except (SyntaxError, NameError):
@@ -81,7 +85,6 @@ class CommandHandler:
             if description:
                 color_print(description, color=SYSTEM_COLOR)
         return True
-
 
     def handle_command(self, command: str):
         # Commands can be things like
