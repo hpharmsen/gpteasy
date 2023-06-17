@@ -11,7 +11,7 @@ class CommandHandler:
         self.add_command('quit', self.handle_quit, ":quit - Quit the program")
         self.add_command('load', self.handle_load, ":load name - loads the saved conversation with the specified name")
         self.add_command('save', self.handle_save, ":save name - saves the conversation under the specified name")
-
+        self.add_command('debug', self.handle_debug, ":debug - set to True displays all prompts and model replies")
         self.add_command('input', self.handle_input, ":input filename - loads an input from the specified file")
         self.add_command('model', self.handle_gpt_attribute, ":model gpt-4 - Sets the AI model")
         self.add_command('max_tokens', self.handle_gpt_attribute,
@@ -57,6 +57,14 @@ class CommandHandler:
     def handle_reset(self):
         self.gpt.reset()
         color_print(f"Conversation reset\n", color=SYSTEM_COLOR)
+        return True
+
+    def handle_debug(self, debug: str=None):
+        if debug is None:
+            color_print(f'debug is {self.gpt.debug}', color=SYSTEM_COLOR)
+        else:
+            self.gpt.debug = debug.lower() in ['true', '1', 't', 'y', 'yes']
+            color_print(f'debug set to {self.gpt.debug}', color=SYSTEM_COLOR)
         return True
 
     def handle_bye(self):
