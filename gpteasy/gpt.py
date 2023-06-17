@@ -9,15 +9,15 @@ from tenacity import retry, wait_random_exponential, stop_after_attempt
 from dotenv import load_dotenv
 from openai.error import APIConnectionError, APIError, RateLimitError
 
-from .display import print_message, color_print, SYSTEM_COLOR, ERROR_COLOR
-from .settings import get_settings
+from gpteasy.display import print_message, color_print, SYSTEM_COLOR, ERROR_COLOR
+from gpteasy.settings import get_settings
 
 BASE_SYSTEM = "You are ChatGPT, a large language model trained by OpenAI."
 
 
 class GptFunction:
     def __init__(self, name: str, description: str, callback=None):
-        self.name = name
+        self.function_name = name
         self.description = description
         self.parameters = {}  # name: (type, description, required, enum)
         self.callback = callback
@@ -48,7 +48,7 @@ class GptFunction:
                 },
             }"""
         function = {
-            "name": self.name,
+            "name": self.function_name,
             "description": self.description,
             "parameters": {
                 "type": "object",
@@ -145,15 +145,15 @@ class GPT:
         result = [{'role': 'system', 'content': self.system()}]
         for m in self.messages[-self.message_memory:]:
             message = {'role': m.role, 'content': m.text}
-            if m.name:  # Function name in case the model called a function
-                message['name'] = m.name
-            if m.content:  # Function result in case the model called a function
-                message['content'] = m.content
+            if m.function_name:  # Function name in case the model called a function
+                message['name'] = m.function_name
+            if m.function_content:  # Function result in case the model called a function
+                message['content'] = m.function_content
             result.append(message)
         return result
 
     def add_function(self, function: GptFunction):
-        self.functions[function.name] = function
+        self.functions[function.function_name] = function
 
     def remove_funtion(self, name: str):
         del self.functions[name]
@@ -216,7 +216,7 @@ class GPT:
             kwargs = json.loads(function_call["arguments"])
             function_response = function_to_call(**kwargs)
 
-            self.messages += [Message('function', name=function_call["name"], content=function_response)]
+            self.messages += [Message('function', function_name=function_call["name"], function_content=function_response)]
 
             # get a new response from GPT where it can see the function response
             completion = chat_completion_request()
@@ -284,7 +284,7 @@ class GPT:
 
 class Message:
     """ Handles the completion as returned by GPT """
-    def __init__(self, role=None, text_or_completion=None, name=None, content=None):
+    def __init__(self, role=None, text_or_completion=None, function_name=None, function_content=None):
         self.role = role
         if isinstance(text_or_completion, str):
             self.text = text_or_completion
@@ -292,8 +292,8 @@ class Message:
         else:
             self.raw_completion = text_or_completion
             self.text = text_or_completion['choices'][0]['message']['content'] if text_or_completion else ''
-        self.name = name  # Name of the function called in case model called a function
-        self.content = content  # Result of the function called in case model called a function
+        self.function_name = function_name  # Name of the function called in case model called a function
+        self.function_content = function_content  # Result of the function called in case model called a function
 
     def content(self):
         try:
