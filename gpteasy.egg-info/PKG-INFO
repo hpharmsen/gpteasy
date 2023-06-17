@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gpteasy
-Version: 0.0.3
+Version: 0.0.4
 Summary: Makes working with OpenAi's GPT API super easy
 Author-email: HP Harmsen <hp@harmsen.nl>
 License: This is free and unencumbered software released into the public domain.
@@ -37,118 +37,87 @@ Description-Content-Type: text/markdown
 Provides-Extra: dev
 License-File: LICENSE
 
-# Justdays
+# GPT Easy
 
-Package to make working with days and ranges of days in Python super easy.
+Package to make working with the OpenAI GPT API in Python super easy.
 
-The package contains two classes: \
-**Day** handles everything you want to do with days. \
-**Period** handles a range of Day objects.
-
-Current version: 0.0.3
+Author: Hans-Peter Harmsen (hp@harmsen.nl) \
+Current version: 0.0.4
 
 ## Installation
+1. Install the package:
 ~~~~bash
-python -m pip install justdays
+python -m pip install gpteasy
 ~~~~
-
-## Day class usage
-
-### Initializing a Day
-~~~~python
-day = Day()  # No arguments, initalize with the current day
-day = Day('2022-08-16')  # One argument, string in YYYY-MM-DD format
-day = Day(2022, 32)  # Two arguments: year, week. Day with be the Monday of that week
-day = Day(2022, 8, 16)  # Three arguments: year, month, day. 
-day = Day(datetime(2022, 8, 16))  # Initialize with Python datetime object
-day = Day(date(2022, 8, 16))  # Initialize with Python date object
-~~~~
-
-### Accessing Day fields
-~~~~python
-d = day.d  # int
-m = day.m  # int
-y = day.y  # int
-as_string = day.str  # in YYYY-MM-DD format
-~~~~
-
-### Represenation
-~~~~python
-str(day) # Returns the day in YYYY-MM-DD format
-day.as_datetime() # Returns the day as a Python datetime object
-day.as_date() # Returns the day as a Python date object
-day.strftime(format_string) # Returns the day as a string formatted according to the format string
-day.as_unix_timestamp() # Returns the day as a unix timestamp (int)
-~~~~
-
-### Days further away or in the past
-~~~~python
-day.next()  # Next day
-day + 1  # Next day
-1 + day  # Next day
-day.previous()  # Previous day
-day - 1  # Previous day
-day.next_weekday()  # Next day that is on a weekday
-day.previous_weekday()  # Previous day that is on a weekday
-day.plus_days(3)  # Add 3 days to the day
-day + 3
-day.plus_days(-3)  # Subtract 3 days from the day
-day.plus_weeks(1)  # Add 1 week to the day
-day.plus_months(1)  # Add 1 month to the day
-~~~~
+2. Create an OpenAI acccount [here](https://platform.openai.com/))
+3. Create OpenAI api keys [here](https://platform.openai.com/account/api-keys)
+4. Create a .env file with the following content:
+```bash
+OPENAI_API_KEY=your-openai-api-key
+OPENAI_ORGANIZATION=your-openai-organization-id
+```
+## Usage
+```Python
+from gpteasy import GPT
 
 
-### Comparing days
-~~~~python
-day1 = Day('2022-08-16')
-day2 = Day('2022-08-20')
-day2 > day1  # Returns True if day2 is after day1
-day2 == day1  # Returns True if day2 is the same day as day1
-days_difference = day2 - day1  # Returns the difference in days between two days (4)
-~~~~
+if __name__ == "__main__":
+    gpt = GPT()
+    gpt.model = 'gpt-3.5-turbo' # Optional, the default model is gpt-4
+    gpt.system = lambda: "You are a movie critic. I feed you with movie titles and you give me a review in 50 words."
 
-### Miscellaneous
-~~~~python
-day.is_weekend()  # Returns True if the day is a weekend
-day.is_weekday()  # Returns True if the day is a weekday
-day.day_of_week()  # Returns the day of the week as an integer (0 = Monday, 6 = Sunday)
-day.day_of_year()  # Returns the day of the year as an integer (1 = 1st of January, 365 = 31st of December in a non leap year)
-day.fraction_of_the_year_past()  # Returns the fraction of the year that has passed (0.0 = 1st of January, 1.0 = 31st of December)
-day.week_number()  # Returns the week number of the year (1 = first week of the year, 52 = last week of the year)
-day.last_monday()  # Returns the last day that was a Monday or the day itself if it is a Monday
-day.last_day_of_month()  # Returns the last day of the month of the day
-day + ' is a nice day'  # Add string to a day
-'The date is ' + day  # Add string to a day
-~~~~
+    message = gpt.chat("Forrest Gump")
+    print(message.text)
+```
+output
+```
+Forrest Gump is an American classic that tells the story of
+a man with a kind heart and simple mind who experiences major
+events in history. Tom Hanks gives an unforgettable performance, 
+making us both laugh and cry. A heartwarming and nostalgic 
+movie that still resonates with audiences today.
+```
+
+## Using the examples
+Install dependencies:
+```bash
+python -m pip install -r requirements.txt
+```
 
 
-## Period class usage
-Period is just a day range. Either fromday or untilday can be left to None
+### Basic
+```bash
+python examples/basic.py
+```
+Starts an interactive session. In the session you dan chat with GPT-4 or another model.
 
-### Initializing a Period
-~~~~python
-period = Period(day1, day2)  # Period ranging from day1 (included) until day2 (not included)
-period = Period(day1)  # One argument: fromday. Untilday is left open
-period = Period('2022-08-16', '2022-08-20')  # Period can be initialized with strings in YYYY-MM-DD format
-period = Period.from_week(2022, 32)  # Period ranging from the Monday of week 32 until the Sunday of week 32
-period = Period.from_month(2022, 8)  # Period ranging from the 1st of August until the 31st of August
-~~~~
+### Function calling
+```bash
+python examples/function_calling.py
+```
+Example of the function calling feature. This feature allows you to call functions from within the GPT-4 model.
+In this case, we query a wheather API to get the current weather.
 
-### Accessing Period fields
-~~~~python
-fromday = period.fromday
-untilday = period.untilday
-length = len(period)
-~~~~
+### Interactive
+```bash
+python examples/interactive.py
+```
+Starts an interactive session. In the session you dan chat with GPT-4 or another model.
 
-### Iterating over a Period
-~~~~python
-for day in period:
-    print(day)
-~~~~
+#### Special commands
+In the interactive mode you can use these special commands which each start with a colon:
 
-### Checking if a Day falls within a Period
-~~~~python
-if day in period:
-    print('yes!')
-~~~~
+| Syntax                            | Description                                                         |
+|-----------------------------------|---------------------------------------------------------------------|
+| :reset                            | resets the conversation                                             |
+| :load _name_                      | loads the saved conversation with the specified name                |
+| :save _name_                      | saves the conversation under the specified name                     |
+| :input _filename_                 | loads an input from the specified file                              |
+| :model _gpt-4_                    | Sets the AI model                                                   |
+| :max_tokens _800_                 | The maximum number of tokens to generate in the completion          |
+| :temperature _0.9_                | What sampling temperature to use, between 0 and 2                   |
+| :n _1_                            | Specifies the number answers given                                  |
+| :stop _["\n", " Human:", " AI:"]_ | Up to 4 sequences where the API will stop generating further tokens |
+| :bye                              | quits but saves the conversation first                              |
+| :exit or :quit                    | quits the program                                                   |
+
