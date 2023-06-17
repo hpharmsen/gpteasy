@@ -6,7 +6,6 @@ gpteasy/commands.py
 gpteasy/display.py
 gpteasy/gpt.py
 gpteasy/repl.py
-gpteasy/settings.py
 gpteasy.egg-info/PKG-INFO
 gpteasy.egg-info/SOURCES.txt
 gpteasy.egg-info/dependency_links.txt
