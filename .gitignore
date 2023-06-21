@@ -1,5 +1,6 @@
 .envrc
 .idea/
+.env
 .DS_Store
 dist/
 __pycache__/
@@ -8,3 +9,6 @@ venv/
 gpteasy.egg-info
 gpteasy.egg-info/
 gpteasy/saves
+examples/database.py
+/examples/chinook.db
+/examples/database2.py

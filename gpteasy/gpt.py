@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import sys
 from pathlib import Path
 
 import openai
@@ -164,51 +165,58 @@ class GPT:
 
     def chat(self, prompt, add_to_messages=True):
 
-        @retry(wait=wait_random_exponential(min=1, max=40), stop=stop_after_attempt(3))
         def chat_completion_request():
             if self.debug:
+                color_print(f"\nRunning completion with these messages", color=DEBUG_COLOR1)
                 for message in self.messages:
                     if hasattr(message, 'text'):
-                        color_print(f"{message.role}: {message.text}", color=DEBUG_COLOR1)
-            try:
+                        color_print(f"{message}", color=DEBUG_COLOR1)
                 if self.functions:
-                    completion = openai.ChatCompletion.create(
-                        model=self.model,
-                        messages=self.get_messages(),
-                        temperature=self.temperature,
-                        max_tokens=self.max_tokens,
-                        n=self.n,
-                        top_p=self.top_p,
-                        frequency_penalty=self.frequency_penalty,
-                        presence_penalty=self.presence_penalty,
-                        stop=self.stop,
-                        functions=self.get_functions(),
-                        function_call="auto" if self.functions else None  # auto is default, but we'll be explicit
-                    )
-                else:  # Version for models without the possibility to use functions
-                    completion = openai.ChatCompletion.create(
-                        model=self.model,
-                        messages=self.get_messages(),
-                        temperature=self.temperature,
-                        max_tokens=self.max_tokens,
-                        n=self.n,
-                        top_p=self.top_p,
-                        frequency_penalty=self.frequency_penalty,
-                        presence_penalty=self.presence_penalty,
-                        stop=self.stop
-                    )
-                if self.debug and hasattr(completion.choices[0], 'text'):
-                    color_print(f"{completion.choices[0].text}", color=DEBUG_COLOR2)
-                return completion
-            except APIConnectionError as e:
-                color_print("Connection error.", color=SYSTEM_COLOR)
-                return e
-            except APIError as e:
-                color_print("API error", color=SYSTEM_COLOR)
-                return e
-            except RateLimitError as e:
-                color_print(f"{self.model} is overloaded", color=SYSTEM_COLOR)
-                return e
+                    color_print(f"And these functions", color=DEBUG_COLOR1)
+                    for function in self.functions.values():
+                        color_print(f"{function.function_name}({function.parameters})", color=DEBUG_COLOR1)
+                print()
+
+            messages = self.get_messages()
+            for _ in range(3):
+                try:
+                    if self.functions:
+                        functions = self.get_functions()
+                        completion = openai.ChatCompletion.create(
+                            model=self.model,
+                            messages=messages,
+                            temperature=self.temperature,
+                            max_tokens=self.max_tokens,
+                            n=self.n,
+                            top_p=self.top_p,
+                            frequency_penalty=self.frequency_penalty,
+                            presence_penalty=self.presence_penalty,
+                            stop=self.stop,
+                            functions=functions,
+                            function_call="auto" if self.functions else None  # auto is default, but we'll be explicit
+                        )
+                    else:  # Version for models without the possibility to use functions
+                        completion = openai.ChatCompletion.create(
+                            model=self.model,
+                            messages=messages,
+                            temperature=self.temperature,
+                            max_tokens=self.max_tokens,
+                            n=self.n,
+                            top_p=self.top_p,
+                            frequency_penalty=self.frequency_penalty,
+                            presence_penalty=self.presence_penalty,
+                            stop=self.stop
+                        )
+                    if self.debug and hasattr(completion.choices[0], 'text'):
+                        color_print(f"{completion.choices[0].text}", color=DEBUG_COLOR2)
+                    return completion
+                except APIConnectionError as e:
+                    color_print("Connection error.", color=SYSTEM_COLOR)
+                except APIError as e:
+                    color_print("API error", color=SYSTEM_COLOR)
+                except RateLimitError as e:
+                    color_print(f"{self.model} is overloaded", color=SYSTEM_COLOR)
+            sys.exit('Too many errors. Aborting.')
 
         if self.messages and not self.name:
             self.name = re.sub(r'\W+', '', self.messages[0].text).replace(' ', '_')[:20]
@@ -224,6 +232,7 @@ class GPT:
             function_response = function_to_call(**kwargs)
 
             self.messages += [Message('function', function_name=function_call["name"], function_content=function_response)]
+            self.functions = {}  # Remove all functions from the model
 
             # get a new response from GPT where it can see the function response
             completion = chat_completion_request()
@@ -313,3 +322,15 @@ class Message:
 
     def __bool__(self):
         return bool(self.raw_completion) or bool(self.text)
+
+    def __str__(self):
+        res = f'role: {self.role}'
+        if self.text:
+            res += f' text: {self.text}'
+        if self.raw_completion:
+            res += f' raw_completion: {self.raw_completion}'
+        if self.function_name:
+            res += f' function_name: {self.function_name}'
+        if self.function_content:
+            res += f' function_content: {self.function_content}'
+        return res
