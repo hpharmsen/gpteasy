@@ -165,7 +165,7 @@ class GPT:
 
     def chat(self, prompt, add_to_messages=True):
 
-        def chat_completion_request():
+        def chat_completion_request(function_call="auto"):
             if self.debug:
                 color_print(f"\nRunning completion with these messages", color=DEBUG_COLOR1)
                 for message in self.messages:
@@ -193,7 +193,7 @@ class GPT:
                             presence_penalty=self.presence_penalty,
                             stop=self.stop,
                             functions=functions,
-                            function_call="auto" if self.functions else None  # auto is default, but we'll be explicit
+                            function_call=function_call
                         )
                     else:  # Version for models without the possibility to use functions
                         completion = openai.ChatCompletion.create(
@@ -232,10 +232,12 @@ class GPT:
             function_response = function_to_call(**kwargs)
 
             self.messages += [Message('function', function_name=function_call["name"], function_content=function_response)]
-            self.functions = {}  # Remove all functions from the model
 
             # get a new response from GPT where it can see the function response
-            completion = chat_completion_request()
+            completion = chat_completion_request(function_call="none")
+
+            # Special case: sometimes the model returns a sql query instead of the answer
+            # In this case explain this to the model and ask for the answer.
 
         message = Message('assistant', completion)
         if add_to_messages:
