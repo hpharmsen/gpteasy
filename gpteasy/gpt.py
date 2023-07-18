@@ -136,6 +136,20 @@ class GPT:
 
         self.debug = False
 
+    @classmethod
+    def from_json(cls, s):
+        gpt = cls()
+        dictionary = json.loads(s)
+        for key, value in dictionary.items():
+            match key:
+                case 'save_dir':
+                    gpt.save_dir = Path(value)
+                case 'messages':
+                    gpt.messages = [Message.from_dict(m) for m in value]
+                case _:
+                    setattr(gpt, key, value)
+        return gpt
+
     def system(self):  # This function can be overwritten by child classes to make the system message dynamic
         return self.system_message
 
