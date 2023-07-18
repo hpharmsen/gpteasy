@@ -313,6 +313,21 @@ class GPT:
             prompt = f.read()
         self.chat(prompt)
 
+    def dumps(self) -> str:
+        dict = {}
+        for key, value in self.__dict__.items():
+            if value is not None:
+                try:
+                    json.dumps(value)
+                    dict[key] = value
+                except ValueError:
+                    match key:
+                        case 'save_dir':
+                            dict[key] = str(value)
+                        case 'messages':
+                            dict[key] = [message.to_dict() for message in value]
+        return json.dumps(dict)
+
 
 class Message:
     """ Handles the completion as returned by GPT """
@@ -359,9 +374,8 @@ class Message:
         return res
 
     def to_dict(self):
-        dict = {}
+        dictionary = {}
         for key, value in self.__dict__.items():
-            if value != None:
-                json.dumps(value)
-                dict[key] = value
-        return dict
+            if value is not None:
+                dictionary[key] = value
+        return dictionary
