@@ -1,3 +1,4 @@
+pip install --upgrade pip
 pip install twine build
 /bin/rm -f dist/*
 python bumpversion.py patch
