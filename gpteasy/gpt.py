@@ -313,6 +313,13 @@ class Message:
         self.function_name = function_name  # Name of the function called in case model called a function
         self.function_content = function_content  # Result of the function called in case model called a function
 
+    @classmethod
+    def from_dict(cls, dict):
+        message = cls()
+        for key, value in dict.items():
+            setattr(message, key, value)
+        return message
+
     def content(self):
         try:
             return json.loads(self.raw_completion['choices'][0]['message']['content'])
@@ -336,3 +343,11 @@ class Message:
         if self.function_content:
             res += f' function_content: {self.function_content}'
         return res
+
+    def to_dict(self):
+        dict = {}
+        for key, value in self.__dict__.items():
+            if value != None:
+                json.dumps(value)
+                dict[key] = value
+        return dict
