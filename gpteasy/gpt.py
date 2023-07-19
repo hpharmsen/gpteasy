@@ -150,6 +150,10 @@ class GPT:
                     setattr(gpt, key, value)
         return gpt
 
+    def set_api_key(self, key: str):
+        """ Used when using GPTEasy from a browser where the user has to specify a key """
+        openai.api_key = key
+
     def system(self):  # This function can be overwritten by child classes to make the system message dynamic
         return self.system_message
 
