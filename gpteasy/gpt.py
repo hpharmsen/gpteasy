@@ -320,7 +320,7 @@ class GPT:
                 try:
                     json.dumps(value)
                     dict[key] = value
-                except ValueError:
+                except  (TypeError, ValueError):
                     match key:
                         case 'save_dir':
                             dict[key] = str(value)
