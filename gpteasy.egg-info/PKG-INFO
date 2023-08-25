@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gpteasy
-Version: 1.1.11
+Version: 1.2.1
 Summary: Makes working with OpenAi's GPT API super easy
 Author-email: HP Harmsen <hp@harmsen.nl>
 License: This is free and unencumbered software released into the public domain.
@@ -42,7 +42,7 @@ License-File: LICENSE
 Package to make working with the OpenAI GPT API in Python super easy.
 
 Author: Hans-Peter Harmsen (hp@harmsen.nl) \
-Current version: 1.1.11
+Current version: 1.2.1
 
 ## Installation
 1. Install the package:
@@ -97,6 +97,18 @@ python examples/function_calling.py
 ```
 Example of the function calling feature. This feature allows you to call functions from within the GPT-4 model.
 In this case, we query a wheather API to get the current weather.
+
+### Specifying a return type
+```bash
+python examples/return_types.py
+```
+You can specify a specific return type (like a list of dicts) for the completion. 
+This is useful when you want to extract structured data from the completion.
+
+To define a return type, specify it as a @dataclass derived from 
+[dataclasses-jsonschema](https://pypi.org/project/dataclasses-jsonschema/). 
+
+See the example code for more details.
 
 ### Interactive
 ```bash
