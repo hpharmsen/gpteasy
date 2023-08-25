@@ -16,7 +16,7 @@ def get_current_weather(location, unit="celsius"):
 
 if __name__ == "__main__":
     gpt = GPT()
-    gpt.model = 'gpt-4-0613'  # After June 27th, 2023, you can use the GPT-4 model
+    gpt.model = 'gpt-4'
 
     # Define a function that GPT can call when it needs extra info. In this case, it's the weather
     gcw = GptFunction(name="get_current_weather", description="Get the current weather in a given location")

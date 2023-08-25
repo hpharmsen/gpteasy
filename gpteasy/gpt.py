@@ -13,13 +13,13 @@ from openai.error import APIConnectionError, APIError, RateLimitError
 from gpteasy.display import print_message, color_print, SYSTEM_COLOR, ERROR_COLOR, DEBUG_COLOR2, DEBUG_COLOR1
 
 BASE_SYSTEM = "You are ChatGPT, a large language model trained by OpenAI."
-
+DEFAULT_PARAMETERS = {"type": "object", "properties": {}, "required": []}
 
 class GptFunction:
-    def __init__(self, name: str, description: str, callback=None):
+    def __init__(self, name: str, description: str, parameters=None, callback=None):
         self.function_name = name
         self.description = description
-        self.parameters = {}  # name: (type, description, required, enum)
+        self.parameters = parameters if parameters else DEFAULT_PARAMETERS  # name: (type, description, required, enum)
         self.callback = callback
 
     def add_param(self, name: str, type: str, description: str = None, required: bool = False, enum: list = None):
@@ -50,21 +50,18 @@ class GptFunction:
         function = {
             "name": self.function_name,
             "description": self.description,
-            "parameters": {
-                "type": "object",
-                "properties": {},
-                "required": []
-            },
+            "parameters": self.parameters
         }
-        for name, (type, description, required, enum) in self.parameters.items():
-            param_values = {"type": type}
-            if description:
-                param_values["description"] = description
-            if enum is not None:
-                param_values["enum"] = enum
-            function["parameters"]["properties"][name] = param_values
-            if required:
-                function["parameters"]["required"].append(name)
+        if not self.parameters:
+            for name, (type, description, required, enum) in self.parameters.items():
+                param_values = {"type": type}
+                if description:
+                    param_values["description"] = description
+                if enum is not None:
+                    param_values["enum"] = enum
+                function["parameters"]["properties"][name] = param_values
+                if required:
+                    function["parameters"]["required"].append(name)
         return function
 
 
@@ -78,6 +75,7 @@ class GPT:
             color_print("No OpenAI API key found. Create one at https://platform.openai.com/account/api-keys and " +
                         "set it in the .env file like OPENAI_API_KEY=here_comes_your_key.", color=ERROR_COLOR)
         self.functions = {}  # Callable GPT functions
+        self.return_type = None  # Structure of the data of the function called by the model. Default is text.
 
         self.system_message = BASE_SYSTEM
 
@@ -130,7 +128,6 @@ class GPT:
         self.name = ''  # Name of the current conversation
         self.save_dir = Path(__file__).resolve().parent / 'saves'
         self.save_dir.mkdir(exist_ok=True)
-
         self.message_memory = 20  # Number of messages to remember. Limits token usage.
         self.messages = []
 
@@ -175,10 +172,21 @@ class GPT:
     def add_function(self, function: GptFunction):
         self.functions[function.function_name] = function
 
+    def set_return_type(self, model):
+        self.return_type = [{
+                    "name": model.__name__,
+                    "description": model.__doc__,
+                    "parameters": model.json_schema()}]
+
     def remove_funtion(self, name: str):
         del self.functions[name]
 
     def get_functions(self):
+        """ Specifying a return type misuses the function calling mechnism. In this case return the return type.
+        """
+        if self.return_type:
+            return self.return_type
+
         return [f.in_completion_format() for f in self.functions.values()] if self.functions else None
 
     def chat(self, prompt, add_to_messages=True):
@@ -195,11 +203,11 @@ class GPT:
                         color_print(f"{function.function_name}({function.parameters})", color=DEBUG_COLOR1)
                 print()
 
-            messages = self.get_messages()
+            messages = self.get_messages()[-1:]
+            functions = self.get_functions()
             for _ in range(3):
                 try:
-                    if self.functions:
-                        functions = self.get_functions()
+                    if functions:
                         completion = openai.ChatCompletion.create(
                             model=self.model,
                             messages=messages,
@@ -241,6 +249,9 @@ class GPT:
         self.messages += [Message('user', prompt)]
 
         completion = chat_completion_request()
+        if self.return_type:
+            # This indicates a return type is used. Return the data in a structured format
+            return json.loads(completion["choices"][0].message["function_call"]["arguments"])
 
         while completion["choices"][0]['finish_reason'] == 'function_call':
             message = completion["choices"][0]["message"]
@@ -330,7 +341,7 @@ class GPT:
                             dict[key] = str(value)
                         case 'messages':
                             dict[key] = [message.to_dict() for message in value]
-        return json.dumps(dict)
+        return json.dumps(dict, indent=2)
 
 
 class Message:
