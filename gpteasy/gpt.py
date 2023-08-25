@@ -203,7 +203,7 @@ class GPT:
                         color_print(f"{function.function_name}({function.parameters})", color=DEBUG_COLOR1)
                 print()
 
-            messages = self.get_messages()[-1:]
+            messages = self.get_messages()
             functions = self.get_functions()
             for _ in range(3):
                 try:
