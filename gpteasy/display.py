@@ -14,8 +14,9 @@ def color_print(text, color, end='\n'):
     rich.get_console().print(text, style=color, end=end)
 
 
-def print_message(message):
+def print_message(message, role):
     colors = {'assistant': ASSISTANT_COLOR, 'system': SYSTEM_COLOR, 'user': USER_COLOR}
-    color = colors[message.role]
-    end = '\n' if message.role == 'user' else '\n\n'
-    color_print(message.text, color=color, end=end)
+    color = colors[role]
+
+    end = '\n' if color == USER_COLOR else '\n\n'
+    color_print(message, color=color, end=end)

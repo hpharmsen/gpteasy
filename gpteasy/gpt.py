@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 import openai
-from tenacity import retry, wait_random_exponential, stop_after_attempt
 from dotenv import load_dotenv
 from openai.error import APIConnectionError, APIError, RateLimitError
 
@@ -169,6 +168,9 @@ class GPT:
             result.append(message)
         return result
 
+    def last_token_count(self):
+        return self.messages[-1].tokens() if self.messages else 0
+
     def add_function(self, function: GptFunction):
         self.functions[function.function_name] = function
 
@@ -274,8 +276,8 @@ class GPT:
             return json.loads(completion["choices"][0].message["function_call"]["arguments"])
         return message.text
 
-    def after_response(self, message):
-        # content is in message['completion']['choices'][0]['message']['content']
+    def after_response(self):
+        # content is in messages[-1]['completion']['choices'][0]['message']['content']
         return  # Can be overridden
 
     def save(self, name=None):
@@ -320,9 +322,9 @@ class GPT:
                     message.text += '\n' + line
             if message:
                 save_message(message)
-        print_message(Message('system', self.system()))
+        print_message(Message('system', self.system()), 'system')
         for message in self.messages:
-            print_message(message)
+            print_message(message.text, message.role)
 
     def file_input(self, filename):
         with open(filename, "r") as f:

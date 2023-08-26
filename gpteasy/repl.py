@@ -1,5 +1,5 @@
 """ Class to handle the interactivity to the model and setting model system parameters """
-from .display import print_message
+from .display import print_message, ASSISTANT_COLOR
 from .gpt import GPT
 
 
@@ -21,12 +21,13 @@ class Repl:
                     break
             else:
                 message = self.gpt.chat(prompt)
-                print_message(message)
-                self.gpt.after_response(message)
+                print_message(message, 'assistant')
+                self.gpt.after_response()
                 if self.show_token_count:
-                    print(f"[{message.tokens()}]")
+                    print(f"[{self.gpt.last_token_count()}]")
 
-    def get_prompt(self):
+    @staticmethod
+    def get_prompt():
         """ Default implementation, can be overridden """
         prompt = ''
         while not prompt:
