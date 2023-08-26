@@ -249,11 +249,8 @@ class GPT:
         self.messages += [Message('user', prompt)]
 
         completion = chat_completion_request()
-        if self.return_type:
-            # This indicates a return type is used. Return the data in a structured format
-            return json.loads(completion["choices"][0].message["function_call"]["arguments"])
 
-        while completion["choices"][0]['finish_reason'] == 'function_call':
+        while not self.return_type and completion["choices"][0]['finish_reason'] == 'function_call':
             message = completion["choices"][0]["message"]
             function_call = message["function_call"]
             function_to_call = self.functions[function_call["name"]]
@@ -271,7 +268,11 @@ class GPT:
         message = Message('assistant', completion)
         if add_to_messages:
             self.messages += [message]
-        return message
+
+        if self.return_type:
+            # This indicates a return type is used. Return the data in a structured format
+            return json.loads(completion["choices"][0].message["function_call"]["arguments"])
+        return message.text
 
     def after_response(self, message):
         # content is in message['completion']['choices'][0]['message']['content']
