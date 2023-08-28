@@ -273,7 +273,9 @@ class GPT:
 
         if self.return_type:
             # This indicates a return type is used. Return the data in a structured format
-            return json.loads(completion["choices"][0].message["function_call"]["arguments"])
+            message.text = completion["choices"][0].message["function_call"]["arguments"]
+            return json.loads(message.text)
+
         return message.text
 
     def after_response(self):

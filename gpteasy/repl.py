@@ -21,7 +21,8 @@ class Repl:
                     break
             else:
                 message = self.gpt.chat(prompt)
-                print_message(message, 'assistant')
+                if type(message) == str:
+                    print_message(message, 'assistant')
                 self.gpt.after_response()
                 if self.show_token_count:
                     print(f"[{self.gpt.last_token_count()}]")
