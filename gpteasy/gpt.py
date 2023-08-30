@@ -271,7 +271,7 @@ class GPT:
         if add_to_messages:
             self.messages += [message]
 
-        if self.return_type:
+        if self.return_type and completion["choices"][0].message.get('function_call'):
             # This indicates a return type is used. Return the data in a structured format
             message.text = completion["choices"][0].message["function_call"]["arguments"]
             return json.loads(message.text)
