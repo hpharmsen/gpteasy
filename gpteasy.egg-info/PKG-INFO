@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gpteasy
-Version: 1.2.7
+Version: 1.2.8
 Summary: Makes working with OpenAi's GPT API super easy
 Author-email: HP Harmsen <hp@harmsen.nl>
 License: This is free and unencumbered software released into the public domain.
@@ -34,22 +34,34 @@ Classifier: Programming Language :: Python
 Classifier: Programming Language :: Python :: 3
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
-Provides-Extra: dev
 License-File: LICENSE
+Requires-Dist: openai
+Requires-Dist: tenacity
+Requires-Dist: python-dateutil
+Requires-Dist: python-dotenv
+Requires-Dist: rich
+Requires-Dist: tenacity
+Requires-Dist: requests
+Provides-Extra: dev
+Requires-Dist: black; extra == "dev"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: build; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+Requires-Dist: nox; extra == "dev"
 
 # GPT Easy
 
 Package to make working with the OpenAI GPT API in Python super easy.
 
 Author: Hans-Peter Harmsen (hp@harmsen.nl) \
-Current version: 1.2.7
+Current version: 1.2.8
 
 ## Installation
 1. Install the package:
 ~~~~bash
 python -m pip install gpteasy
 ~~~~
-2. Create an OpenAI acccount [here](https://platform.openai.com/))
+2. Create an OpenAI acccount [here](https://platform.openai.com/)
 3. Create OpenAI api keys [here](https://platform.openai.com/account/api-keys)
 4. Create a .env file with the following content:
 ```bash
