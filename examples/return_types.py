@@ -1,19 +1,21 @@
 """" Example showing the use of GPT Easy with data returned in a fixed format using dataclasses"""
 import sys
-sys.path.append('.')
 import pathlib
 import json
 from dataclasses import dataclass
 
-from gpteasy import GPT
 from dataclasses_jsonschema import JsonSchemaMixin
 
-""" Define your model as dataclasses with the JsonSchemaMixin """
+sys.path.append('.')
+from gpteasy import GPT
+
+
 @dataclass
 class Person(JsonSchemaMixin):
     name: str
     house_number: int
     profession: str
+
 
 @dataclass
 class Persons(JsonSchemaMixin):

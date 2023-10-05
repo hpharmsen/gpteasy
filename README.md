@@ -10,7 +10,7 @@ Current version: 1.2.7
 ~~~~bash
 python -m pip install gpteasy
 ~~~~
-2. Create an OpenAI acccount [here](https://platform.openai.com/))
+2. Create an OpenAI acccount [here](https://platform.openai.com/)
 3. Create OpenAI api keys [here](https://platform.openai.com/account/api-keys)
 4. Create a .env file with the following content:
 ```bash

@@ -69,7 +69,7 @@ class CommandHandler:
         color_print(f"Conversation reset\n", color=SYSTEM_COLOR)
         return True
 
-    def handle_debug(self, debug: str=None):
+    def handle_debug(self, debug: str = None):
         if debug is None:
             color_print(f'debug is {self.gpt.debug}', color=SYSTEM_COLOR)
         else:

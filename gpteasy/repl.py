@@ -1,5 +1,5 @@
 """ Class to handle the interactivity to the model and setting model system parameters """
-from .display import print_message, ASSISTANT_COLOR
+from .display import print_message
 from .gpt import GPT
 
 

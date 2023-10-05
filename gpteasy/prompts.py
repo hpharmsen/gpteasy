@@ -2,7 +2,8 @@ import tomllib
 
 _prompts = {}
 
-def set_prompt_file(path:str):
+
+def set_prompt_file(path: str):
     global _prompts
     with open(path, 'rb') as f:
         _prompts = tomllib.load(f)
