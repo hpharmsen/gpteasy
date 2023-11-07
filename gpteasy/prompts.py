@@ -9,7 +9,7 @@ def set_prompt_file(path: str):
         _prompts = tomllib.load(f)
 
 
-def prompt(key, **variables):
+def get_prompt(key, **variables):
     global _prompts
     if variables:
         return _prompts[key].format(**variables)
