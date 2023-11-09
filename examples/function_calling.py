@@ -26,4 +26,4 @@ if __name__ == "__main__":
     gpt.add_function(gcw)
 
     message = gpt.chat("What's the weather like in Amsterdam?")
-    print(message.text)
+    print(message)

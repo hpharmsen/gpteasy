@@ -10,4 +10,4 @@ if __name__ == "__main__":
     gpt.system = lambda: "You are a movie critic. I feed you with movie titles and you give me a review in 50 words."
 
     message = gpt.chat("Forrest Gump")
-    print(message.text)
+    print(message)

@@ -6,8 +6,8 @@ import sys
 from pathlib import Path
 
 import openai
+from openai import APIConnectionError, APIError, RateLimitError, OpenAI
 from dotenv import load_dotenv
-from openai.error import APIConnectionError, APIError, RateLimitError
 
 from gpteasy.display import print_message, color_print, SYSTEM_COLOR, ERROR_COLOR, DEBUG_COLOR2, DEBUG_COLOR1
 
@@ -73,13 +73,14 @@ class GPT:
         if not openai.api_key:
             color_print("No OpenAI API key found. Create one at https://platform.openai.com/account/api-keys and " +
                         "set it in the .env file like OPENAI_API_KEY=here_comes_your_key.", color=ERROR_COLOR)
+        self.client = OpenAI()
         self.functions = {}  # Callable GPT functions
         self.return_type = None  # Structure of the data of the function called by the model. Default is text.
 
         self.system_message = BASE_SYSTEM
 
         # Model parameters
-        self.model = "gpt-4"  # "gpt-3.5-turbo"
+        self.model = "gpt-3.5-turbo"  # or "gpt-4"
 
         # The maximum number of tokens to generate in the completion.
         # Defaults to 16
@@ -210,7 +211,7 @@ class GPT:
             for _ in range(3):
                 try:
                     if functions:
-                        completion = openai.ChatCompletion.create(
+                        completion = self.client.chat.completions.create(
                             model=self.model,
                             messages=messages,
                             temperature=self.temperature,
@@ -224,7 +225,7 @@ class GPT:
                             function_call=function_call
                         )
                     else:  # Version for models without the possibility to use functions
-                        completion = openai.ChatCompletion.create(
+                        completion = self.client.chat.completions.create(
                             model=self.model,
                             messages=messages,
                             temperature=self.temperature,
@@ -252,14 +253,15 @@ class GPT:
 
         completion = chat_completion_request()
 
-        while not self.return_type and completion["choices"][0]['finish_reason'] == 'function_call':
-            message = completion["choices"][0]["message"]
-            function_call = message["function_call"]
-            function_to_call = self.functions[function_call["name"]]
-            kwargs = json.loads(function_call["arguments"])
+        while not self.return_type and completion.choices[0].finish_reason == 'function_call':
+            message = completion.choices[0].message
+            completion.choices[0].message.function_call
+            function_call = message.function_call
+            function_to_call = self.functions[function_call.name]
+            kwargs = json.loads(function_call.arguments)
             function_response = function_to_call(**kwargs)
 
-            self.messages += [Message('function', function_name=function_call["name"], function_content=function_response)]
+            self.messages += [Message('function', function_name=function_call.name, function_content=function_response)]
 
             # get a new response from GPT where it can see the function response
             completion = chat_completion_request(function_call="none")
@@ -271,9 +273,9 @@ class GPT:
         if add_to_messages:
             self.messages += [message]
 
-        if self.return_type and completion["choices"][0].message.get('function_call'):
+        if self.return_type and completion.choices[0].message.function_call:
             # This indicates a return type is used. Return the data in a structured format
-            message.text = completion["choices"][0].message["function_call"]["arguments"]
+            message.text = completion.choices[0].message.function_call.arguments
             return json.loads(message.text)
 
         return message.text
@@ -358,7 +360,7 @@ class Message:
             self.raw_completion = None
         else:
             self.raw_completion = text_or_completion
-            self.text = text_or_completion['choices'][0]['message']['content'] if text_or_completion else ''
+            self.text = text_or_completion.choices[0].message.content if text_or_completion else ''
         self.function_name = function_name  # Name of the function called in case model called a function
         self.function_content = function_content  # Result of the function called in case model called a function
 
@@ -376,7 +378,7 @@ class Message:
             return {'type': 'other', 'response': self.raw_completion['choices'][0]['message']['content']}
 
     def tokens(self):
-        return self.raw_completion['usage']['total_tokens']
+        return self.raw_completion.usage.total_tokens
 
     def __bool__(self):
         return bool(self.raw_completion) or bool(self.text)
