@@ -269,7 +269,8 @@ class GPT:
             # Special case: sometimes the model returns a sql query instead of the answer
             # In this case explain this to the model and ask for the answer.
 
-        message = Message('assistant', completion)
+        message_text = completion.choices[0].message.content
+        message = Message('assistant', message_text)
         if add_to_messages:
             self.messages += [message]
 
