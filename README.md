@@ -3,7 +3,7 @@
 Package to make working with the OpenAI GPT API in Python super easy.
 
 Author: Hans-Peter Harmsen (hp@harmsen.nl) \
-Current version: 1.3.2
+Current version: 1.4.1
 
 ## Installation
 1. Install the package:
