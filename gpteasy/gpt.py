@@ -7,6 +7,7 @@ from pathlib import Path
 
 import openai
 from openai import APIConnectionError, APIError, RateLimitError, OpenAI
+from openai._types import NOT_GIVEN
 from dotenv import load_dotenv
 
 from gpteasy.display import print_message, color_print, SYSTEM_COLOR, ERROR_COLOR, DEBUG_COLOR2, DEBUG_COLOR1
@@ -65,7 +66,7 @@ class GptFunction:
 
 
 class GPT:
-    def __init__(self):
+    def __init__(self, model: str='gpt-3.5', **kwargs):
         # Authentication
         if not os.getenv("OPENAI_API_KEY"):
             load_dotenv()  # Load the .env file into the environment
@@ -80,49 +81,49 @@ class GPT:
         self.system_message = BASE_SYSTEM
 
         # Model parameters
-        self.model = "gpt-3.5-turbo"  # or "gpt-4"
+        self.model = model
 
         # The maximum number of tokens to generate in the completion.
         # Defaults to 16
         # The token count of your prompt plus max_tokens cannot exceed the model's context length.
         # Most models have a context length of 2048 tokens (except for the newest models, which support 4096).
-        self.max_tokens = 800
+        self.max_tokens = kwargs.get('max_tokens', 800)
 
         # What sampling temperature to use, between 0 and 2.
         # Higher values like 0.8 will make the output more random, while lower values like 0.2
         # will make it more focused and deterministic.
         # We generally recommend altering this or top_p but not both
         # Defaults to 1
-        self.temperature = 0.9
+        self.temperature = kwargs.get('temperature', 0.5)
 
         # An alternative to sampling with temperature, called nucleus sampling,
         # where the model considers the results of the tokens with top_p probability mass.
         # So 0.1 means only the tokens comprising the top 10% probability mass are considered.
         # We generally recommend altering this or temperature but not both.
         # Defaults to 1
-        self.top_p = 1
+        self.top_p = kwargs.get('top_p', 1)
 
         # How many completions to generate for each prompt.
         # Because this parameter generates many completions, it can quickly consume your token quota.
         # Use carefully and ensure that you have reasonable settings for max_tokens and stop.
-        self.n = 1
+        self.n = kwargs.get('n', 1)
 
         # Up to 4 sequences where the API will stop generating further tokens.
         # The returned text will not contain the stop sequence.
         # Example: [" Human:", " AI:"]
-        self.stop = None
+        self.stop = kwargs.get('stop')
 
         # Number between -2.0 and 2.0.
         # Positive values penalize new tokens based on whether they appear in the text so far,
         # increasing the model's likelihood to talk about new topics.
         # Defaults to 0
-        self.presence_penalty = 0
+        self.presence_penalty = kwargs.get('presence_penalty', 0)
 
         # Number between -2.0 and 2.0.
         # Positive values penalize new tokens based on their existing frequency in the text so far,
         # decreasing the model's likelihood to repeat the same line verbatim.
         # Defaults to 0
-        self.frequency_penalty = 0
+        self.frequency_penalty = kwargs.get('frequency_penalty', 0)
 
         # Parameters to save the current conversation
         self.name = ''  # Name of the current conversation
@@ -192,7 +193,7 @@ class GPT:
 
         return [f.in_completion_format() for f in self.functions.values()] if self.functions else None
 
-    def chat(self, prompt, add_to_messages=True):
+    def chat(self, prompt, add_to_messages=True, return_json=False):
 
         def chat_completion_request(function_call="auto"):
             if self.debug:
@@ -222,7 +223,8 @@ class GPT:
                             presence_penalty=self.presence_penalty,
                             stop=self.stop,
                             functions=functions,
-                            function_call=function_call
+                            function_call=function_call,
+                            response_format={"type": "json_object"} if return_json else NOT_GIVEN
                         )
                     else:  # Version for models without the possibility to use functions
                         completion = self.client.chat.completions.create(
@@ -234,7 +236,8 @@ class GPT:
                             top_p=self.top_p,
                             frequency_penalty=self.frequency_penalty,
                             presence_penalty=self.presence_penalty,
-                            stop=self.stop
+                            stop=self.stop,
+                            response_format = {"type": "json_object"} if return_json else NOT_GIVEN,
                         )
                     if self.debug and hasattr(completion.choices[0], 'text'):
                         color_print(f"{completion.choices[0].text}", color=DEBUG_COLOR2)
@@ -279,7 +282,7 @@ class GPT:
             message.text = completion.choices[0].message.function_call.arguments
             return json.loads(message.text)
 
-        return message.text
+        return json.loads(message.text) if return_json else message.text
 
     def after_response(self):
         # content is in messages[-1]['completion']['choices'][0]['message']['content']
