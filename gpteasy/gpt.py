@@ -135,8 +135,8 @@ class GPT:
         self.debug = False
 
     @classmethod
-    def from_json(cls, s):
-        gpt = cls()
+    def from_json(cls, s, *args, **kwargs):
+        gpt = cls(*args, **kwargs)
         dictionary = json.loads(s)
         for key, value in dictionary.items():
             match key:
