@@ -2,7 +2,6 @@
 import json
 import os
 import re
-import sys
 from pathlib import Path
 
 import openai
@@ -16,6 +15,7 @@ from gpteasy.display import print_message, color_print, SYSTEM_COLOR, ERROR_COLO
 BASE_SYSTEM = "You are ChatGPT, a large language model trained by OpenAI."
 DEFAULT_PARAMETERS = {"type": "object", "properties": {}, "required": []}
 
+
 class GptFunction:
     def __init__(self, name: str, description: str, parameters=None, callback=None):
         self.function_name = name
@@ -23,8 +23,8 @@ class GptFunction:
         self.parameters = parameters if parameters else DEFAULT_PARAMETERS  # name: (type, description, required, enum)
         self.callback = callback
 
-    def add_param(self, name: str, type: str, description: str = None, required: bool = False, enum: list = None):
-        self.parameters[name] = (type, description, required, enum)
+    def add_param(self, name: str, param_type: str, description: str = None, required: bool = False, enum: list = None):
+        self.parameters[name] = (param_type, description, required, enum)
 
     def __call__(self, **kwargs):
         return self.callback(**kwargs)
@@ -54,8 +54,8 @@ class GptFunction:
             "parameters": self.parameters
         }
         if not self.parameters:
-            for name, (type, description, required, enum) in self.parameters.items():
-                param_values = {"type": type}
+            for name, (param_type, description, required, enum) in self.parameters.items():
+                param_values = {"type": param_type}
                 if description:
                     param_values["description"] = description
                 if enum is not None:
@@ -67,7 +67,7 @@ class GptFunction:
 
 
 class GPT:
-    def __init__(self, model: str='gpt-3.5', **kwargs):
+    def __init__(self, model: str = 'gpt-3.5', **kwargs):
         # Authentication
         if not os.getenv("OPENAI_API_KEY"):
             load_dotenv()  # Load the .env file into the environment
@@ -238,7 +238,7 @@ class GPT:
                             frequency_penalty=self.frequency_penalty,
                             presence_penalty=self.presence_penalty,
                             stop=self.stop,
-                            response_format = {"type": "json_object"} if return_json else NOT_GIVEN,
+                            response_format={"type": "json_object"} if return_json else NOT_GIVEN,
                         )
                     if self.debug and hasattr(completion.choices[0], 'text'):
                         color_print(f"{completion.choices[0].text}", color=DEBUG_COLOR2)
@@ -249,7 +249,8 @@ class GPT:
                     color_print("API error", color=SYSTEM_COLOR)
                 except RateLimitError as e:
                     color_print(f"{self.model} is overloaded", color=SYSTEM_COLOR)
-            sys.exit('Too many errors. Aborting.')
+            print('Too many errors. Aborting.')
+            raise e
 
         if self.messages and not self.name:
             self.name = re.sub(r'\W+', '', self.messages[0].text).replace(' ', '_')[:20]
@@ -258,9 +259,7 @@ class GPT:
         completion = chat_completion_request()
 
         while not self.return_type and completion.choices[0].finish_reason == 'function_call':
-            message = completion.choices[0].message
-            completion.choices[0].message.function_call
-            function_call = message.function_call
+            function_call = completion.choices[0].message.function_call
             function_to_call = self.functions[function_call.name]
             kwargs = json.loads(function_call.arguments)
             function_response = function_to_call(**kwargs)
@@ -341,21 +340,21 @@ class GPT:
         self.chat(prompt)
 
     def dumps(self) -> str:
-        dict = {}
+        data = {}
         for key, value in self.__dict__.items():
             if value is not None:
                 try:
                     json.dumps(value)
-                    dict[key] = value
-                except  (TypeError, ValueError):
+                    data[key] = value
+                except (TypeError, ValueError):
                     match key:
                         case 'save_dir':
-                            dict[key] = str(value)
+                            data[key] = str(value)
                         case 'messages':
-                            dict[key] = [message.to_dict() for message in value]
-        return json.dumps(dict, indent=2)
+                            data[key] = [message.to_dict() for message in value]
+        return json.dumps(data, indent=2)
 
-    def token_count(self, text:str):
+    def token_count(self, text: str):
         encoding = tiktoken.encoding_for_model(self.model)
         return len(encoding.encode(text))
 
@@ -374,9 +373,9 @@ class Message:
         self.function_content = function_content  # Result of the function called in case model called a function
 
     @classmethod
-    def from_dict(cls, dict):
+    def from_dict(cls, data: dict):
         message = cls()
-        for key, value in dict.items():
+        for key, value in data.items():
             setattr(message, key, value)
         return message
 
