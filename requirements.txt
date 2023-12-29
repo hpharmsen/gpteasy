@@ -9,3 +9,4 @@ packaging
 pip
 pytest
 dataclasses-jsonschema
+tiktoken

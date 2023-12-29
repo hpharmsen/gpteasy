@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import openai
+import tiktoken
 from openai import APIConnectionError, APIError, RateLimitError, OpenAI
 from openai._types import NOT_GIVEN
 from dotenv import load_dotenv
@@ -353,6 +354,10 @@ class GPT:
                         case 'messages':
                             dict[key] = [message.to_dict() for message in value]
         return json.dumps(dict, indent=2)
+
+    def token_count(self, text:str):
+        encoding = tiktoken.encoding_for_model(self.model)
+        return len(encoding.encode(text))
 
 
 class Message:
