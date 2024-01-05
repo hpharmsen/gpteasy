@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gpteasy"
-version = "1.5.0"
+version = "1.5.1"
 description = "Makes working with OpenAi's GPT API super easy"
 readme = "README.md"
 authors = [{ name = "HP Harmsen", email = "hp@harmsen.nl" }]
@@ -21,7 +21,8 @@ dependencies = [
     "python-dotenv",
     "rich",
     "tenacity",
-    "requests"
+    "requests",
+    "tiktoken"
 ]
 requires-python = ">=3.10"
 
