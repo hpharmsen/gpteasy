@@ -5,6 +5,7 @@ python-dotenv
 rich
 tenacity
 requests
+tiktoken
 
 [dev]
 black

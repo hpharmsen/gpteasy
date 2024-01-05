@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: gpteasy
-Version: 1.5.0
+Version: 1.5.2
 Summary: Makes working with OpenAi's GPT API super easy
 Author-email: HP Harmsen <hp@harmsen.nl>
 License: This is free and unencumbered software released into the public domain.
@@ -42,6 +42,7 @@ Requires-Dist: python-dotenv
 Requires-Dist: rich
 Requires-Dist: tenacity
 Requires-Dist: requests
+Requires-Dist: tiktoken
 Provides-Extra: dev
 Requires-Dist: black; extra == "dev"
 Requires-Dist: pytest; extra == "dev"
@@ -54,7 +55,7 @@ Requires-Dist: nox; extra == "dev"
 Package to make working with the OpenAI GPT API in Python super easy.
 
 Author: Hans-Peter Harmsen (hp@harmsen.nl) \
-Current version: 1.5.0
+Current version: 1.5.2
 
 ## Installation
 1. Install the package:
